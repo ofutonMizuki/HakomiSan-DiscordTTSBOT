@@ -1,0 +1,9 @@
+#node_moduleを対象外
+/node_modules
+
+#不必要な設定ファイルを対象外
+package-lock.json
+config.json
+
+#logを対象外
+*.log
