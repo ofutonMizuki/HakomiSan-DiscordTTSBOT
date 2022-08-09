@@ -23,5 +23,10 @@ Node.jsとDockerが必要ですがここではインストール方法は割愛�
 ```
 ./run.sh
 ```
+### botを停止するにはCtrl+Cを押します
+### Docker上で動作しているVoiceVoxを停止するには以下のコマンドを実行します
+```
+./stopVoiceVox.sh
+```
 ## 開発環境&推奨環境
 開発にはWindows11 + WSL2(Ubuntu 20.04LTS)を使っていますので、推奨環境としてWSL2(Ubuntu 20.04LTS)もしくはUbuntu 20.04LTSをおすすめします
