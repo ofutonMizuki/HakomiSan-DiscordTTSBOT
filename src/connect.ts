@@ -15,16 +15,20 @@ class Connection {
     }
 }
 
-class ConnectionManager {
+export class ConnectionManager {
     private guilds: Guilds = new Guilds();
 
-    public connect(message: Message) {
+    constructor() {
+
+    }
+
+    connect(message: Message) {
         //メッセージを送信したユーザが参加しているボイスチャンネルを取得
         let voiceChannel: VoiceChannel | StageChannel | null = null;
         if (message.member) {
             voiceChannel = message.member.voice.channel;
         }
-        
+
         //もしボイスチャンネルに接続されていなかったら
         if (!voiceChannel) {
             throw new Error("ボイスチャンネルに接続されていません");
@@ -63,11 +67,11 @@ class ConnectionManager {
         }
     }
 
-    disConnect(message: Message){
+    disConnect(message: Message) {
         let guildID = message.guildId;
-        if(!guildID){
+        if (!guildID) {
             throw new Error();
-            
+
         }
         //もしギルドが登録されていなかったらギルドを登録
         if (!(guildID in this.guilds)) {
@@ -77,13 +81,17 @@ class ConnectionManager {
         let connection = this.guilds[guildID].connection;
 
         //もしコネクションが存在したなら
-        if(connection != undefined){
+        if (connection != undefined) {
             //コネクションを破棄
             connection.destroy();
+            this.guilds[guildID].textChannelID = '';
+            this.guilds[guildID].connection = undefined;
         }
-        this.guilds[guildID].textChannelID = '';
-        this.guilds[guildID].connection = undefined;
+        else {
+            this.guilds[guildID].textChannelID = '';
+            this.guilds[guildID].connection = undefined;
+            throw new Error("接続されていません");
+            
+        }
     }
 }
-
-module.exports = ConnectionManager;

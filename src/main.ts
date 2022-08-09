@@ -1,5 +1,5 @@
 import { Client, GuildMember, Intents, Message, StageChannel, VoiceChannel } from 'discord.js';
-const ConnectionManager = require('./connect.ts');
+import {ConnectionManager} from './connect';
 let connectionManager = new ConnectionManager();
 
 //log4jsの初期設定
@@ -29,8 +29,6 @@ client.on('messageCreate', (message: Message) => {
         return;
     }
     if (message.content.startsWith(`${config.prefix}connect`) || message.content.startsWith(`${config.prefix}c`)) {
-        
-
         //ボイスチャンネルへ接続を試みる
         try {
             connectionManager.connect(message);
