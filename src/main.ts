@@ -1,6 +1,9 @@
 import { Client, GuildMember, Intents, Message, StageChannel, VoiceChannel } from 'discord.js';
-import {ConnectionManager} from './connect';
+import { ConnectionManager, speech } from './connect';
 let connectionManager = new ConnectionManager();
+
+import { Voice } from "./voice";
+let voice = new Voice();
 
 //log4jsの初期設定
 import * as log4js from 'log4js';
@@ -23,7 +26,7 @@ client.on('ready', () => {
     logger.info(`I am ready!`);
 });
 
-client.on('messageCreate', (message: Message) => {
+client.on('messageCreate', async (message: Message) => {
     //もしbotなら
     if (message.author.bot) {
         return;
@@ -52,7 +55,16 @@ client.on('messageCreate', (message: Message) => {
     }
     //それ以外なら読み上げを試みる
     else {
-        //
+        //connectionの取得を試みて、もし取得できたら発声する
+        try {
+            let connection = connectionManager.getConnection(message);
+            if (connection) {
+                let name = await voice.createVoice(message.content);
+                speech(connection, name);
+            }
+        } catch (error) {
+            logger.error(error);
+        }
     }
 })
 

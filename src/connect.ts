@@ -22,6 +22,16 @@ export class ConnectionManager {
 
     }
 
+    getConnection(message: Message) {
+        let guildID = message.guildId;
+
+        if (!guildID) {
+            throw new Error("メッセージはギルド内ではありません");
+
+        }
+        return this.guilds[guildID].connection;
+    }
+
     connect(message: Message) {
         //メッセージを送信したユーザが参加しているボイスチャンネルを取得
         let voiceChannel: VoiceChannel | StageChannel | null = null;
@@ -91,7 +101,19 @@ export class ConnectionManager {
             this.guilds[guildID].textChannelID = '';
             this.guilds[guildID].connection = undefined;
             throw new Error("接続されていません");
-            
+
         }
+    }
+}
+
+export function speech(connection: voice.VoiceConnection | undefined, fileName: string) {
+    //もし_voiceConnectionがundefinedではないなら読み上げる
+    if (connection != undefined) {
+        const player = voice.createAudioPlayer();
+        connection.subscribe(player);
+        player.play(voice.createAudioResource(`./wav/${fileName}.wav`));
+    }
+    else{
+        throw new Error('connectionはundefinedです');
     }
 }
