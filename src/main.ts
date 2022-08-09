@@ -29,15 +29,11 @@ client.on('messageCreate', (message: Message) => {
         return;
     }
     if (message.content.startsWith(`${config.prefix}connect`) || message.content.startsWith(`${config.prefix}c`)) {
-        //メッセージを送信したユーザが参加しているボイスチャンネルを取得
-        let voiceChannel: VoiceChannel | StageChannel | null = null;
-        if (message.member) {
-            voiceChannel = message.member.voice.channel;
-        }
+        
 
         //ボイスチャンネルへ接続を試みる
         try {
-            connectionManager.connect(voiceChannel, message.channelId);
+            connectionManager.connect(message);
 
             logger.info('接続しました');
         }
@@ -46,7 +42,15 @@ client.on('messageCreate', (message: Message) => {
         }
     }
     else if (message.content.startsWith(`${config.prefix}disConnect`) || message.content.startsWith(`${config.prefix}dc`)) {
-        connectionManager.disConnect(message.guildId);
+        //ボイスチャンネルから切断を試みる
+        try {
+            connectionManager.disConnect(message);
+
+            logger.info('切断しました');
+        }
+        catch (error) {
+            logger.error(error);
+        }
     }
     //それ以外なら読み上げを試みる
     else {

@@ -1,5 +1,5 @@
 import * as voice from '@discordjs/voice';
-import { StageChannel, VoiceChannel } from 'discord.js';
+import { Message, StageChannel, VoiceChannel } from 'discord.js';
 
 //ギルド
 class Guilds {
@@ -18,7 +18,13 @@ class Connection {
 class ConnectionManager {
     private guilds: Guilds = new Guilds();
 
-    public connect(voiceChannel: VoiceChannel | StageChannel | null, textChannelID: string) {
+    public connect(message: Message) {
+        //メッセージを送信したユーザが参加しているボイスチャンネルを取得
+        let voiceChannel: VoiceChannel | StageChannel | null = null;
+        if (message.member) {
+            voiceChannel = message.member.voice.channel;
+        }
+        
         //もしボイスチャンネルに接続されていなかったら
         if (!voiceChannel) {
             throw new Error("ボイスチャンネルに接続されていません");
@@ -51,13 +57,18 @@ class ConnectionManager {
 
             //必要な情報を登録する
             this.guilds[guildID].connection = connection;
-            this.guilds[guildID].textChannelID = textChannelID;
+            this.guilds[guildID].textChannelID = message.channelId;
 
             return;
         }
     }
 
-    disConnect(guildID: string){
+    disConnect(message: Message){
+        let guildID = message.guildId;
+        if(!guildID){
+            throw new Error();
+            
+        }
         //もしギルドが登録されていなかったらギルドを登録
         if (!(guildID in this.guilds)) {
             this.guilds[guildID] = new Connection();
