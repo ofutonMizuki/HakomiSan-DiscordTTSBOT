@@ -69,6 +69,7 @@ client.on('messageCreate', async (message: Message) => {
             if (connection) {
                 let name = await voice.createVoice(message.content);
                 speech(connection, name);
+                logger.info(`speech: ${name}`);
             }
         } catch (error) {
             logger.error(error);

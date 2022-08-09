@@ -24,12 +24,17 @@ export class ConnectionManager {
 
     getConnection(message: Message) {
         let guildID = message.guildId;
+        if (guildID) {
+            //もしギルドが登録されていなかったらギルドを登録
+            if (!(guildID in this.guilds)) {
+                this.guilds[guildID] = new Connection();
+            }
+            return this.guilds[guildID].connection;
 
-        if (!guildID) {
+        }else{
             throw new Error("メッセージはギルド内ではありません");
 
         }
-        return this.guilds[guildID].connection;
     }
 
     connect(message: Message) {
@@ -83,7 +88,7 @@ export class ConnectionManager {
         this.deleteConnect(guildID);
     }
 
-    deleteConnect(guildID: string | null){
+    deleteConnect(guildID: string | null) {
         if (!guildID) {
             throw new Error('ギルドではありません');
 
@@ -117,7 +122,7 @@ export function speech(connection: voice.VoiceConnection | undefined, fileName: 
         connection.subscribe(player);
         player.play(voice.createAudioResource(`./wav/${fileName}.wav`));
     }
-    else{
+    else {
         throw new Error('connectionはundefinedです');
     }
 }
