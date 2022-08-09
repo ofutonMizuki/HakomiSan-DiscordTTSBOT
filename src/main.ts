@@ -36,9 +36,13 @@ client.on('messageCreate', async (message: Message) => {
         try {
             connectionManager.connect(message);
 
+            message.reply('接続しました');
             logger.info('接続しました');
         }
         catch (error) {
+            if(error instanceof Error){
+                message.reply(error.message);
+            }
             logger.error(error);
         }
     }
@@ -47,9 +51,13 @@ client.on('messageCreate', async (message: Message) => {
         try {
             connectionManager.disConnect(message);
 
+            message.reply('切断しました');
             logger.info('切断しました');
         }
         catch (error) {
+            if(error instanceof Error){
+                message.reply(error.message);
+            }
             logger.error(error);
         }
     }
@@ -78,7 +86,7 @@ client.on('voiceStateUpdate', async (oldState, newState) => {
                 logger.info('解除しました');
             }
             catch (error) {
-                logger.error(error);
+                logger.info(error);
             }
         }
     }

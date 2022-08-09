@@ -85,7 +85,7 @@ export class ConnectionManager {
 
     deleteConnect(guildID: string | null){
         if (!guildID) {
-            throw new Error();
+            throw new Error('ギルドではありません');
 
         }
         //もしギルドが登録されていなかったらギルドを登録
