@@ -1,6 +1,6 @@
 # HakomiSan-DiscordTTSBOT
-## HakomiSan-DiscordTTSBOTとは 
-簡単に言えば読み上げBOTです
+## HakomiSan-DiscordTTSBOT(通称: はこみさん)とは 
+はこみさんは読み上げBOTです
 
 音声合成エンジンにVoiceVoxを使用し品質の良い音声が生成されます。しかし、CPU版VoiceVoxを使用している以上は遅延の大きさは避けられませんので可能であればGPU版の使用をおすすめします
 
