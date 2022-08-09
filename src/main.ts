@@ -1,4 +1,6 @@
-import { Client, Intents } from 'discord.js';
+import { Client, GuildMember, Intents, Message, StageChannel, VoiceChannel } from 'discord.js';
+const ConnectionManager = require('./connect.ts');
+let connectionManager = new ConnectionManager();
 
 //log4jsの初期設定
 import * as log4js from 'log4js';
@@ -20,6 +22,37 @@ client.login(config.token);
 client.on('ready', () => {
     logger.info(`I am ready!`);
 });
+
+client.on('messageCreate', (message: Message) => {
+    //もしbotなら
+    if (message.author.bot) {
+        return;
+    }
+    if (message.content.startsWith(`${config.prefix}connect`) || message.content.startsWith(`${config.prefix}c`)) {
+        //メッセージを送信したユーザが参加しているボイスチャンネルを取得
+        let voiceChannel: VoiceChannel | StageChannel | null = null;
+        if (message.member) {
+            voiceChannel = message.member.voice.channel;
+        }
+
+        //ボイスチャンネルへ接続を試みる
+        try {
+            connectionManager.connect(voiceChannel, message.channelId);
+
+            logger.info('接続しました');
+        }
+        catch (error) {
+            logger.error(error);
+        }
+    }
+    else if (message.content.startsWith(`${config.prefix}disConnect`) || message.content.startsWith(`${config.prefix}dc`)) {
+        connectionManager.disConnect(message.guildId);
+    }
+    //それ以外なら読み上げを試みる
+    else {
+        //
+    }
+})
 
 //なにかよくわからないエラーに遭遇したら
 process.on('uncaughtException', async (err) => {
