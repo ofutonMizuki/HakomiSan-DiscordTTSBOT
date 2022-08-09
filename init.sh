@@ -11,3 +11,7 @@ fi
 #
 rm -rf node_modules
 npm install
+
+docker pull voicevox/voicevox_engine:cpu-ubuntu20.04-latest
+
+mkdir wav

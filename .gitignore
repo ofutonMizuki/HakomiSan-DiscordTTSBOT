@@ -7,3 +7,6 @@ config.json
 
 #logを対象外
 *.log
+
+#wavフォルダを除外
+/wav
