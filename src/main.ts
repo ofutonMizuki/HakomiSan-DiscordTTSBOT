@@ -68,6 +68,22 @@ client.on('messageCreate', async (message: Message) => {
     }
 })
 
+client.on('voiceStateUpdate', async (oldState, newState) => {
+    //もし強制的に切断されたら登録を解除する
+    if (oldState.channelId != null && newState.channelId === null) {
+        if (client.user != null && newState.id == client.user.id) {
+            try {
+                connectionManager.deleteConnect(oldState.guild.id);
+    
+                logger.info('解除しました');
+            }
+            catch (error) {
+                logger.error(error);
+            }
+        }
+    }
+})
+
 //なにかよくわからないエラーに遭遇したら
 process.on('uncaughtException', async (err) => {
     logger.fatal(err);

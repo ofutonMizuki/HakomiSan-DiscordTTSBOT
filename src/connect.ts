@@ -79,6 +79,11 @@ export class ConnectionManager {
 
     disConnect(message: Message) {
         let guildID = message.guildId;
+
+        this.deleteConnect(guildID);
+    }
+
+    deleteConnect(guildID: string | null){
         if (!guildID) {
             throw new Error();
 
@@ -101,7 +106,6 @@ export class ConnectionManager {
             this.guilds[guildID].textChannelID = '';
             this.guilds[guildID].connection = undefined;
             throw new Error("接続されていません");
-
         }
     }
 }
