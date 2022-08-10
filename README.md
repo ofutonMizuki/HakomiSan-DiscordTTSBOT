@@ -21,12 +21,23 @@ Node.jsとDockerが必要ですがここではインストール方法は割愛�
 ```
 ./init_GPU.sh
 ```
+- ※オプション: 外部のVoiceVoxを使う場合
+```
+./init_noVoiceVox.sh
+```
 ### 必要なライブラリのインストールとconfig.jsonが生成されますので、config.jsonのtokenに自分のBOTのトークンを貼り付けます
 ```
 {
   "prefix": ">",
   "token": "-----ここにトークンを貼り付け-----",
   "url": "http://localhost:50021"
+}
+```
+- ※オプション: 外部のVoiceVoxを使う場合
+```{
+  "prefix": ">",
+  "token": "-----ここにトークンを貼り付け-----",
+  "url": "-----ここにVoiceVoxのサーバのURLを貼り付け-----"
 }
 ```
 ### run.shを実行すればすぐにBOTが起動します
@@ -37,6 +48,10 @@ Node.jsとDockerが必要ですがここではインストール方法は割愛�
 - GPU版の場合
 ```
 ./run_GPU.sh
+```
+- ※オプション: 外部のVoiceVoxを使う場合
+```
+./run_noVoiceVox.sh
 ```
 ### botを停止するにはCtrl+Cを押します
 ### Docker上で動作しているVoiceVoxを停止するには以下のコマンドを実行します
