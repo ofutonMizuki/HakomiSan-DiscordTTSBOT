@@ -93,6 +93,14 @@ client.on('voiceStateUpdate', async (oldState, newState) => {
     }
 })
 
+client.on('shardReconnecting', (id) => {
+    logger.warn(`shardReconnecting: ${id}`);
+})
+
+client.on('debug', (message) => {
+    logger.debug(message);
+})
+
 //なにかよくわからないエラーに遭遇したら
 process.on('uncaughtException', async (err) => {
     logger.fatal(err);
