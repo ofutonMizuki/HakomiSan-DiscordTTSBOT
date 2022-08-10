@@ -1,4 +1,5 @@
 import { Client, GuildMember, Intents, Message, MessageEmbed, StageChannel, User, VoiceChannel } from 'discord.js';
+import * as HakomiUtil from './util';
 
 import { ConnectionManager, speech } from './connect';
 let connectionManager = new ConnectionManager();
@@ -27,41 +28,12 @@ client.on('ready', () => {
     logger.info(`I am ready!`);
 });
 
-function addCommonEmbed(embed: MessageEmbed) {
-    embed.setThumbnail((<User>client.user).displayAvatarURL());
-}
-
-function levelToColor(level: number) {
-    switch (level) {
-        case 0:
-            return 0x000000;
-            break;
-        case 1:
-            return 0x00ffff;
-            break;
-        case 2:
-            return 0x00ff00;
-            break;
-        case 3:
-            return 0xffff00;
-            break;
-        case 4:
-            return 0xff0000;
-            break;
-        case 5:
-            return 0xff00ff;
-            break;
-    }
-
-    return 0x000000;
-}
-
 function replyError(message: Message) {
     //埋め込みの内容を生成
     const embed = new MessageEmbed()
-        .setColor(levelToColor(5))
+        .setColor(HakomiUtil.levelToColor(5))
         .setTitle("エラーが発生しました");
-    addCommonEmbed(embed);
+    HakomiUtil.addCommonEmbed(embed, client.user);
 
     //メッセージに返信
     message.reply({ embeds: [embed] });
@@ -79,9 +51,9 @@ client.on('messageCreate', async (message: Message) => {
 
             //埋め込みの内容を生成
             const embed = new MessageEmbed()
-                .setColor(levelToColor(info.getLevel()))
+                .setColor(HakomiUtil.levelToColor(info.getLevel()))
                 .setTitle(info.getMessage());
-            addCommonEmbed(embed);
+            HakomiUtil.addCommonEmbed(embed, client.user);
 
             //メッセージに返信
             message.reply({ embeds: [embed] });
@@ -101,9 +73,9 @@ client.on('messageCreate', async (message: Message) => {
 
             //埋め込みの内容を生成
             const embed = new MessageEmbed()
-                .setColor(levelToColor(info.getLevel()))
+                .setColor(HakomiUtil.levelToColor(info.getLevel()))
                 .setTitle(info.getMessage());
-            addCommonEmbed(embed);
+            HakomiUtil.addCommonEmbed(embed, client.user);
 
             //メッセージに返信
             message.reply({ embeds: [embed] });
