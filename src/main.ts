@@ -48,55 +48,40 @@ client.on('messageCreate', async (message: Message) => {
     try {
         if (message.content.startsWith(`${config.prefix}connect`) || message.content.startsWith(`${config.prefix}c`)) {
             //ボイスチャンネルへ接続を試みる
-            try {
-                let info = connectionManager.connect(message);
-    
-                //埋め込みの内容を生成
-                const embed = new MessageEmbed()
-                    .setColor(HakomiUtil.levelToColor(info.getLevel()))
-                    .setTitle(info.getMessage());
-                HakomiUtil.addCommonEmbed(embed, client.user);
-    
-                //メッセージに返信
-                message.reply({ embeds: [embed] });
-    
-                logger.info(info.getMessage());
-            }
-            catch (error) {
-                throw error;
-            }
+            let info = connectionManager.connect(message);
+
+            //埋め込みの内容を生成
+            const embed = new MessageEmbed()
+                .setColor(HakomiUtil.levelToColor(info.getLevel()))
+                .setTitle(info.getMessage());
+            HakomiUtil.addCommonEmbed(embed, client.user);
+
+            //メッセージに返信
+            message.reply({ embeds: [embed] });
+
+            logger.info(info.getMessage());
         }
         else if (message.content.startsWith(`${config.prefix}disConnect`) || message.content.startsWith(`${config.prefix}dc`)) {
             //ボイスチャンネルから切断を試みる
-            try {
-                let info = connectionManager.disConnect(message);
-    
-                //埋め込みの内容を生成
-                const embed = new MessageEmbed()
-                    .setColor(HakomiUtil.levelToColor(info.getLevel()))
-                    .setTitle(info.getMessage());
-                HakomiUtil.addCommonEmbed(embed, client.user);
-    
-                //メッセージに返信
-                message.reply({ embeds: [embed] });
-            }
-            catch (error) {
-                throw error;
-            }
+            let info = connectionManager.disConnect(message);
+
+            //埋め込みの内容を生成
+            const embed = new MessageEmbed()
+                .setColor(HakomiUtil.levelToColor(info.getLevel()))
+                .setTitle(info.getMessage());
+            HakomiUtil.addCommonEmbed(embed, client.user);
+
+            //メッセージに返信
+            message.reply({ embeds: [embed] });
         }
         //それ以外なら読み上げを試みる
         else {
             //connectionの取得を試みて、もし取得できたら発声する
-            try {
-                let connection = connectionManager.getConnection(message);
-                if (connection) {
-                    let name = await voice.createVoice(message.content);
-                    speech(connection, name);
-                    logger.info(`speech: ${name}`);
-                }
-            }
-            catch (error) {
-                throw error;
+            let connection = connectionManager.getConnection(message);
+            if (connection) {
+                let name = await voice.createVoice(message.content);
+                speech(connection, name);
+                logger.info(`speech: ${name}`);
             }
         }
     } catch (error) {
