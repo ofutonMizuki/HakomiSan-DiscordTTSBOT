@@ -1,5 +1,6 @@
 import * as voice from '@discordjs/voice';
 import { Message, StageChannel, VoiceChannel } from 'discord.js';
+import { Info } from "./info";
 
 //ギルド
 class Guilds {
@@ -53,7 +54,7 @@ export class ConnectionManager {
 
         //もしボイスチャンネルに接続されていなかったら
         if (!voiceChannel) {
-            throw new Error("ボイスチャンネルに接続されていません");
+            return new Info("ボイスチャンネルに接続されていません", 3);
         }
 
         let guildID: string = voiceChannel.guildId;
@@ -65,11 +66,11 @@ export class ConnectionManager {
 
         //もしボイスチャンネルの接続権限がなかったら
         if (!voiceChannel.joinable) {
-            throw new Error("ボイスチャンネルに接続できません");
+            return new Info("ボイスチャンネルに接続できません", 3);
         }
         //もしすでに接続しているのならば
         else if (this.guilds[guildID].connection) {
-            throw new Error("すでに接続されています");
+            return new Info("すでに接続されています", 3);
         }
         else {
             //コネクションを生成
@@ -85,17 +86,17 @@ export class ConnectionManager {
             this.guilds[guildID].connection = connection;
             this.guilds[guildID].textChannelID = message.channelId;
 
-            return;
+            return new Info("接続しました", 2);
         }
     }
 
-    disConnect(message: Message) {
+    disConnect(message: Message): Info {
         let guildID = message.guildId;
 
-        this.deleteConnect(guildID);
+        return this.deleteConnect(guildID);
     }
 
-    deleteConnect(guildID: string | null) {
+    deleteConnect(guildID: string | null): Info {
         if (!guildID) {
             throw new Error('ギルドではありません');
 
@@ -113,11 +114,12 @@ export class ConnectionManager {
             connection.destroy();
             this.guilds[guildID].textChannelID = '';
             this.guilds[guildID].connection = undefined;
+            return new Info("切断しました", 2);
         }
         else {
             this.guilds[guildID].textChannelID = '';
             this.guilds[guildID].connection = undefined;
-            throw new Error("接続されていません");
+            return new Info("接続されていません", 3);
         }
     }
 }

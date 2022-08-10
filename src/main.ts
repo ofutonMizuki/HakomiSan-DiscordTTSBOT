@@ -1,4 +1,5 @@
-import { Client, GuildMember, Intents, Message, StageChannel, VoiceChannel } from 'discord.js';
+import { Client, GuildMember, Intents, Message, MessageEmbed, StageChannel, User, VoiceChannel } from 'discord.js';
+
 import { ConnectionManager, speech } from './connect';
 let connectionManager = new ConnectionManager();
 
@@ -26,6 +27,46 @@ client.on('ready', () => {
     logger.info(`I am ready!`);
 });
 
+function addCommonEmbed(embed: MessageEmbed) {
+    embed.setThumbnail((<User>client.user).displayAvatarURL());
+}
+
+function levelToColor(level: number) {
+    switch (level) {
+        case 0:
+            return 0x000000;
+            break;
+        case 1:
+            return 0x00ffff;
+            break;
+        case 2:
+            return 0x00ff00;
+            break;
+        case 3:
+            return 0xffff00;
+            break;
+        case 4:
+            return 0xff0000;
+            break;
+        case 5:
+            return 0xff00ff;
+            break;
+    }
+
+    return 0x000000;
+}
+
+function replyError(message: Message) {
+    //埋め込みの内容を生成
+    const embed = new MessageEmbed()
+        .setColor(levelToColor(5))
+        .setTitle("エラーが発生しました");
+    addCommonEmbed(embed);
+
+    //メッセージに返信
+    message.reply({ embeds: [embed] });
+}
+
 client.on('messageCreate', async (message: Message) => {
     //もしbotなら
     if (message.author.bot) {
@@ -34,30 +75,42 @@ client.on('messageCreate', async (message: Message) => {
     if (message.content.startsWith(`${config.prefix}connect`) || message.content.startsWith(`${config.prefix}c`)) {
         //ボイスチャンネルへ接続を試みる
         try {
-            connectionManager.connect(message);
+            let info = connectionManager.connect(message);
 
-            message.reply('接続しました');
-            logger.info('接続しました');
+            //埋め込みの内容を生成
+            const embed = new MessageEmbed()
+                .setColor(levelToColor(info.getLevel()))
+                .setTitle(info.getMessage());
+            addCommonEmbed(embed);
+
+            //メッセージに返信
+            message.reply({ embeds: [embed] });
+
+            logger.info(info.getMessage());
         }
         catch (error) {
-            if(error instanceof Error){
-                message.reply(error.message);
-            }
+            replyError(message);
+
             logger.error(error);
         }
     }
     else if (message.content.startsWith(`${config.prefix}disConnect`) || message.content.startsWith(`${config.prefix}dc`)) {
         //ボイスチャンネルから切断を試みる
         try {
-            connectionManager.disConnect(message);
+            let info = connectionManager.disConnect(message);
 
-            message.reply('切断しました');
-            logger.info('切断しました');
+            //埋め込みの内容を生成
+            const embed = new MessageEmbed()
+                .setColor(levelToColor(info.getLevel()))
+                .setTitle(info.getMessage());
+            addCommonEmbed(embed);
+
+            //メッセージに返信
+            message.reply({ embeds: [embed] });
         }
         catch (error) {
-            if(error instanceof Error){
-                message.reply(error.message);
-            }
+            replyError(message);
+
             logger.error(error);
         }
     }
@@ -72,6 +125,8 @@ client.on('messageCreate', async (message: Message) => {
                 logger.info(`speech: ${name}`);
             }
         } catch (error) {
+            replyError(message);
+
             logger.error(error);
         }
     }
@@ -83,7 +138,7 @@ client.on('voiceStateUpdate', async (oldState, newState) => {
         if (client.user != null && newState.id == client.user.id) {
             try {
                 connectionManager.deleteConnect(oldState.guild.id);
-    
+
                 logger.info('解除しました');
             }
             catch (error) {
