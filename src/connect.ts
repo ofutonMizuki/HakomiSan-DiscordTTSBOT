@@ -29,9 +29,16 @@ export class ConnectionManager {
             if (!(guildID in this.guilds)) {
                 this.guilds[guildID] = new Connection();
             }
-            return this.guilds[guildID].connection;
 
-        }else{
+            //もし指定されたテキストチャンネルなら
+            if (message.channelId == this.guilds[guildID].textChannelID) {
+                let connection = this.guilds[guildID].connection;
+                return connection;
+            }
+            return undefined;
+
+        }
+        else {
             throw new Error("メッセージはギルド内ではありません");
 
         }
@@ -61,7 +68,7 @@ export class ConnectionManager {
             throw new Error("ボイスチャンネルに接続できません");
         }
         //もしすでに接続しているのならば
-        else if (this.guilds[guildID].connection && (<voice.VoiceConnection>(this.guilds[guildID].connection)).state.status == voice.VoiceConnectionStatus.Ready) {
+        else if (this.guilds[guildID].connection) {
             throw new Error("すでに接続されています");
         }
         else {
