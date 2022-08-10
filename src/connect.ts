@@ -45,7 +45,7 @@ export class ConnectionManager {
         }
     }
 
-    connect(message: Message) {
+    connect(message: Message): Info {
         //メッセージを送信したユーザが参加しているボイスチャンネルを取得
         let voiceChannel: VoiceChannel | StageChannel | null = null;
         if (message.member) {
