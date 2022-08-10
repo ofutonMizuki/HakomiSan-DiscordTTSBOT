@@ -5,7 +5,7 @@ if [ ! -e config.json ]; then
     touch config.json
 
     #設定ファイルのテンプレートを書き込み
-    echo -e "{\n    \"prefix\": \">\",\n    \"token\": \"token\"\n}" >> config.json
+    echo -e "{\n    \"prefix\": \">\",\n    \"token\": \"token\",\n    \"url\": \"http://localhost:50021\"\n}" >> config.json
 fi
 
 #

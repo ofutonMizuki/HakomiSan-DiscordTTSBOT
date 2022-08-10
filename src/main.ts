@@ -2,16 +2,16 @@ import { Client, GuildMember, Intents, Message, StageChannel, VoiceChannel } fro
 import { ConnectionManager, speech } from './connect';
 let connectionManager = new ConnectionManager();
 
+//設定ファイルの読み込み
+const config = require(process.argv[2]);
+
 import { Voice } from "./voice";
-let voice = new Voice();
+let voice = new Voice(config.url);
 
 //log4jsの初期設定
 import * as log4js from 'log4js';
 const logger = log4js.getLogger();
 logger.level = 'debug';
-
-//設定ファイルの読み込み
-const config = require(process.argv[2]);
 
 //クライアントを新規作成
 const client = new Client({

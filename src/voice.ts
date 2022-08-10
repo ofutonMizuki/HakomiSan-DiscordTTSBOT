@@ -10,8 +10,8 @@ export class Voice {
     private client: Client;
 
     //初期化
-    constructor() {
-        this.client = new Client('http://localhost:50021');
+    constructor(url: string) {
+        this.client = new Client(url);
     }
 
     //音声を生成
