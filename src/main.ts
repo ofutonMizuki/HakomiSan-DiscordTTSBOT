@@ -1,5 +1,6 @@
 import { Client, GuildMember, Intents, Message, MessageEmbed, StageChannel, User, VoiceChannel } from 'discord.js';
 import * as HakomiUtil from './util';
+import { Info } from './info';
 
 import { ConnectionManager, speech } from './connect';
 let connectionManager = new ConnectionManager();
@@ -39,6 +40,17 @@ function replyError(message: Message) {
     message.reply({ embeds: [embed] });
 }
 
+function replyMessage(message: Message, info: Info){
+    //埋め込みの内容を生成
+    const embed = new MessageEmbed()
+        .setColor(HakomiUtil.levelToColor(info.getLevel()))
+        .setTitle(info.getMessage());
+    HakomiUtil.addCommonEmbed(embed, client.user);
+
+    //メッセージに返信
+    message.reply({ embeds: [embed] });
+}
+
 client.on('messageCreate', async (message: Message) => {
     //もしbotなら
     if (message.author.bot) {
@@ -49,30 +61,18 @@ client.on('messageCreate', async (message: Message) => {
         if (message.content.startsWith(`${config.prefix}connect`) || message.content.startsWith(`${config.prefix}c`)) {
             //ボイスチャンネルへ接続を試みる
             let info = connectionManager.connect(message);
-
-            //埋め込みの内容を生成
-            const embed = new MessageEmbed()
-                .setColor(HakomiUtil.levelToColor(info.getLevel()))
-                .setTitle(info.getMessage());
-            HakomiUtil.addCommonEmbed(embed, client.user);
-
-            //メッセージに返信
-            message.reply({ embeds: [embed] });
+            
+            replyMessage(message, info);
 
             logger.info(info.getMessage());
         }
         else if (message.content.startsWith(`${config.prefix}disConnect`) || message.content.startsWith(`${config.prefix}dc`)) {
             //ボイスチャンネルから切断を試みる
             let info = connectionManager.disConnect(message);
+            
+            replyMessage(message, info);
 
-            //埋め込みの内容を生成
-            const embed = new MessageEmbed()
-                .setColor(HakomiUtil.levelToColor(info.getLevel()))
-                .setTitle(info.getMessage());
-            HakomiUtil.addCommonEmbed(embed, client.user);
-
-            //メッセージに返信
-            message.reply({ embeds: [embed] });
+            logger.info(info.getMessage());
         }
         //それ以外なら読み上げを試みる
         else {
