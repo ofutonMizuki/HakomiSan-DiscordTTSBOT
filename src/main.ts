@@ -28,6 +28,18 @@ client.login(config.token);
 //準備完了したら
 client.on('ready', () => {
     logger.info(`I am ready!`);
+    if (client.application) {
+        client.application.commands.set([
+            {
+                name: "connect",
+                description: '接続'
+            },
+            {
+                name: 'disconnect',
+                description: '切断'
+            }
+        ])
+    }
 });
 
 function replyError(message: Message) {

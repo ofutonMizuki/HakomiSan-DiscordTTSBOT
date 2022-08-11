@@ -3,6 +3,4 @@ docker run --name "voicevox" --rm -d --gpus all -p '127.0.0.1:50021:50021' voice
 rm -r wav/
 mkdir wav
 
-./register.sh
-
 npx ts-node ./src/main.ts ../config.json
