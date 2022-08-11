@@ -1,4 +1,4 @@
-import { Client, GuildMember, Intents, Message, MessageEmbed, StageChannel, User, VoiceChannel } from 'discord.js';
+import { Client, CommandInteraction, GuildMember, Intents, Interaction, Message, MessageEmbed } from 'discord.js';
 import * as HakomiUtil from './util';
 import { Info } from './info';
 
@@ -35,7 +35,7 @@ function replyError(message: Message) {
     replyMessage(message, info);
 }
 
-function replyMessage(message: Message, info: Info){
+function replyMessage(message: Message, info: Info) {
     //埋め込みの内容を生成
     const embed = new MessageEmbed()
         .setColor(HakomiUtil.levelToColor(info.getLevel()))
@@ -44,6 +44,28 @@ function replyMessage(message: Message, info: Info){
 
     //メッセージに返信
     message.reply({ embeds: [embed] });
+}
+
+function replyErrorInteraction(interaction: Interaction) {
+    let info = new Info("エラーが発生しました", 5);
+
+    if (interaction.isCommand()) {
+        replyInteraction(interaction, info);
+    }
+}
+
+function replyInteraction(interaction: CommandInteraction, info: Info) {
+    //埋め込みの内容を生成
+    const embed = new MessageEmbed()
+        .setColor(HakomiUtil.levelToColor(info.getLevel()))
+        .setTitle(info.getMessage());
+    HakomiUtil.addCommonEmbed(embed, client.user);
+
+    interaction.reply({
+        embeds: [embed]
+    }).catch(error => {
+        logger.error(error);
+    })
 }
 
 client.on('messageCreate', async (message: Message) => {
@@ -56,7 +78,7 @@ client.on('messageCreate', async (message: Message) => {
         if (message.content.startsWith(`${config.prefix}connect`) || message.content.startsWith(`${config.prefix}c`)) {
             //ボイスチャンネルへ接続を試みる
             let info = connectionManager.connect(message);
-            
+
             replyMessage(message, info);
 
             logger.info(info.getMessage());
@@ -64,7 +86,7 @@ client.on('messageCreate', async (message: Message) => {
         else if (message.content.startsWith(`${config.prefix}disConnect`) || message.content.startsWith(`${config.prefix}dc`)) {
             //ボイスチャンネルから切断を試みる
             let info = connectionManager.disConnect(message);
-            
+
             replyMessage(message, info);
 
             logger.info(info.getMessage());
@@ -85,6 +107,39 @@ client.on('messageCreate', async (message: Message) => {
         logger.error(error);
     }
 
+})
+
+client.on('interactionCreate', (interaction: Interaction) => {
+    try {
+        if (interaction.isCommand()) {
+            if (interaction.commandName == 'connect') {
+                let member = interaction.member;
+                if (member instanceof GuildMember || member == null) {
+                    //ボイスチャンネルへ接続を試みる
+                    let info = connectionManager.createConnect(member, interaction.channel);
+
+                    replyInteraction(interaction, info);
+
+                    logger.info(info.getMessage());
+                }
+                else {
+                    throw new Error("member = APIInteractionGuildMember");
+                }
+            }
+            else if (interaction.commandName == 'disconnect') {
+                //ボイスチャンネルから切断を試みる
+                let info = connectionManager.deleteConnect(interaction.guildId);
+
+                replyInteraction(interaction, info);
+
+                logger.info(info.getMessage());
+            }
+        }
+    } catch (error) {
+        replyErrorInteraction(interaction);
+
+        logger.error(error);
+    }
 })
 
 client.on('voiceStateUpdate', async (oldState, newState) => {

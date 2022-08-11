@@ -1,0 +1,1 @@
+npx ts-node ./src/register.ts ../config.json
