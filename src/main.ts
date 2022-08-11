@@ -30,14 +30,9 @@ client.on('ready', () => {
 });
 
 function replyError(message: Message) {
-    //埋め込みの内容を生成
-    const embed = new MessageEmbed()
-        .setColor(HakomiUtil.levelToColor(5))
-        .setTitle("エラーが発生しました");
-    HakomiUtil.addCommonEmbed(embed, client.user);
+    let info = new Info("エラーが発生しました", 5);
 
-    //メッセージに返信
-    message.reply({ embeds: [embed] });
+    replyMessage(message, info);
 }
 
 function replyMessage(message: Message, info: Info){
