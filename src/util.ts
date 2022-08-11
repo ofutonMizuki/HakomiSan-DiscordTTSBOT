@@ -2,7 +2,14 @@ import { MessageEmbed, User } from 'discord.js';
 
 export function addCommonEmbed(embed: MessageEmbed, user: User | null) {
     if (user) {
-        embed.setThumbnail((user).displayAvatarURL());
+        embed
+            .addFields(
+                {
+                    name: "公式リポジトリ",
+                    value: "[https://github.com/ofutonMizuki/HakomiSan-DiscordTTSBOT](https://github.com/ofutonMizuki/HakomiSan-DiscordTTSBOT)",
+                }
+            )
+            .setTimestamp();
     }
 }
 
