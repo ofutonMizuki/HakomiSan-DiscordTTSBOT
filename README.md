@@ -1,7 +1,7 @@
 # HakomiSan-DiscordTTSBOT
 
 ## HakomiSan-DiscordTTSBOT(通称: はこみさん)とは 
-はこみさんは読み上げBOTです
+はこみさんはオープンな読み上げBOTです
 
 音声合成エンジンにVoiceVoxを使用し品質の良い音声が生成されます。
 
