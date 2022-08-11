@@ -1,5 +1,6 @@
 import { Client, CommandInteraction, GuildMember, Intents, Interaction, Message, MessageEmbed } from 'discord.js';
 import * as HakomiUtil from './util';
+import * as InteractionUtil from './interaction';
 import { Info } from './info';
 
 import { ConnectionManager, speech } from './connect';
@@ -40,32 +41,10 @@ function replyMessage(message: Message, info: Info) {
     const embed = new MessageEmbed()
         .setColor(HakomiUtil.levelToColor(info.getLevel()))
         .setTitle(info.getMessage());
-    HakomiUtil.addCommonEmbed(embed, client.user);
+    HakomiUtil.addCommonEmbed(embed);
 
     //メッセージに返信
     message.reply({ embeds: [embed] });
-}
-
-function replyErrorInteraction(interaction: Interaction) {
-    let info = new Info("エラーが発生しました", 5);
-
-    if (interaction.isCommand()) {
-        replyInteraction(interaction, info);
-    }
-}
-
-function replyInteraction(interaction: CommandInteraction, info: Info) {
-    //埋め込みの内容を生成
-    const embed = new MessageEmbed()
-        .setColor(HakomiUtil.levelToColor(info.getLevel()))
-        .setTitle(info.getMessage());
-    HakomiUtil.addCommonEmbed(embed, client.user);
-
-    interaction.reply({
-        embeds: [embed]
-    }).catch(error => {
-        logger.error(error);
-    })
 }
 
 client.on('messageCreate', async (message: Message) => {
@@ -111,33 +90,8 @@ client.on('messageCreate', async (message: Message) => {
 
 client.on('interactionCreate', (interaction: Interaction) => {
     try {
-        if (interaction.isCommand()) {
-            if (interaction.commandName == 'connect') {
-                let member = interaction.member;
-                if (member instanceof GuildMember || member == null) {
-                    //ボイスチャンネルへ接続を試みる
-                    let info = connectionManager.createConnect(member, interaction.channel);
-
-                    replyInteraction(interaction, info);
-
-                    logger.info(info.getMessage());
-                }
-                else {
-                    throw new Error("member = APIInteractionGuildMember");
-                }
-            }
-            else if (interaction.commandName == 'disconnect') {
-                //ボイスチャンネルから切断を試みる
-                let info = connectionManager.deleteConnect(interaction.guildId);
-
-                replyInteraction(interaction, info);
-
-                logger.info(info.getMessage());
-            }
-        }
+        InteractionUtil.interaction(interaction, connectionManager);
     } catch (error) {
-        replyErrorInteraction(interaction);
-
         logger.error(error);
     }
 })

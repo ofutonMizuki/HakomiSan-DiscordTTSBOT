@@ -1,16 +1,14 @@
 import { MessageEmbed, User } from 'discord.js';
 
-export function addCommonEmbed(embed: MessageEmbed, user: User | null) {
-    if (user) {
-        embed
-            .addFields(
-                {
-                    name: "公式リポジトリ",
-                    value: "[https://github.com/ofutonMizuki/HakomiSan-DiscordTTSBOT](https://github.com/ofutonMizuki/HakomiSan-DiscordTTSBOT)",
-                }
-            )
-            .setTimestamp();
-    }
+export function addCommonEmbed(embed: MessageEmbed) {
+    embed
+        .addFields(
+            {
+                name: "公式リポジトリ",
+                value: "[https://github.com/ofutonMizuki/HakomiSan-DiscordTTSBOT](https://github.com/ofutonMizuki/HakomiSan-DiscordTTSBOT)",
+            }
+        )
+        .setTimestamp();
 }
 
 export function levelToColor(level: number) {
