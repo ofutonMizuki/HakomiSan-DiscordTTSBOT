@@ -1,9 +1,10 @@
 import { CommandInteraction, GuildMember, Interaction, MessageEmbed } from 'discord.js';
 import { ConnectionManager } from './connect';
+import { DictionaryManager } from './dictionary';
 import { Info } from './info';
 import * as HakomiUtil from './util';
 
-export function interaction(interaction: Interaction, connectionManager: ConnectionManager) {
+export function interaction(interaction: Interaction, connectionManager: ConnectionManager, dictionaryManager: DictionaryManager) {
     try {
         if (interaction.isCommand()) {
             if (interaction.commandName == 'connect') {
@@ -27,6 +28,19 @@ export function interaction(interaction: Interaction, connectionManager: Connect
                 replyInteraction(interaction, info);
 
                 return info.getMessage();
+            }
+            else if (interaction.commandName == 'addword') {
+                let guildID = interaction.guildId;
+                let word = interaction.options.getString('word');
+                let read = interaction.options.getString('read');
+                if (guildID && word && read) {
+                    let info = dictionaryManager.addWord(guildID, word, read);
+
+                    replyInteraction(interaction, info);
+                }
+                else{
+                    throw new Error('なにか足りない');
+                }
             }
         }
     } catch (error) {

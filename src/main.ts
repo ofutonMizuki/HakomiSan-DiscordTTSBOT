@@ -2,6 +2,8 @@ import { Client, CommandInteraction, GuildMember, Intents, Interaction, Message,
 import * as HakomiUtil from './util';
 import * as InteractionUtil from './interaction';
 import { Info } from './info';
+import { DictionaryManager } from './dictionary';
+let dictionaryManager = new DictionaryManager();
 
 import { ConnectionManager, speech } from './connect';
 let connectionManager = new ConnectionManager();
@@ -37,6 +39,24 @@ client.on('ready', () => {
             {
                 name: 'disconnect',
                 description: '切断'
+            },
+            {
+                name: 'addword',
+                description: '辞書に追加',
+                options: [
+                    {
+                        type: "STRING",
+                        name: "word",
+                        required: true,
+                        description: '登録する単語'
+                    },
+                    {
+                        type: "STRING",
+                        name: "read",
+                        required: true,
+                        description: '登録する読み'
+                    }
+                ]
             }
         ])
     }
@@ -84,12 +104,17 @@ client.on('messageCreate', async (message: Message) => {
         }
         //それ以外なら読み上げを試みる
         else {
-            //connectionの取得を試みて、もし取得できたら発声する
-            let connection = connectionManager.getConnection(message);
-            if (connection) {
-                let name = await voice.createVoice(message.content);
-                speech(connection, name);
-                logger.info(`speech: ${name}`);
+            let guildID = message.guildId;
+            if (guildID) {
+                let content: string = dictionaryManager.replace(guildID, message.content);
+
+                //connectionの取得を試みて、もし取得できたら発声する
+                let connection = connectionManager.getConnection(message);
+                if (connection) {
+                    let name = await voice.createVoice(content);
+                    speech(connection, name);
+                    logger.info(`speech: ${name}`);
+                }
             }
         }
     } catch (error) {
@@ -102,7 +127,7 @@ client.on('messageCreate', async (message: Message) => {
 
 client.on('interactionCreate', (interaction: Interaction) => {
     try {
-        InteractionUtil.interaction(interaction, connectionManager);
+        InteractionUtil.interaction(interaction, connectionManager, dictionaryManager);
     } catch (error) {
         logger.error(error);
     }

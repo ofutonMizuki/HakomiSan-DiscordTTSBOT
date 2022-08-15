@@ -4,6 +4,7 @@
 #不必要な設定ファイルを対象外
 package-lock.json
 config.json
+dictionary.json
 
 #logを対象外
 *.log
