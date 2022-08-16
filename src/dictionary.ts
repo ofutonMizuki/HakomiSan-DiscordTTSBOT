@@ -76,4 +76,32 @@ export class DictionaryManager {
 
         return info;
     }
+
+    deleteWord(guildID: string, key: string){
+        //もしギルドが登録されていなかったらギルドを登録
+        if (!(guildID in this.guilds)) {
+            this.guilds[guildID] = new Dictionary();
+        }
+        
+        let count = 0;
+        for (let i = 0; i < this.guilds[guildID].words.length; i++) {
+            if (this.guilds[guildID].words[i].key == key) {
+                this.guilds[guildID].words.splice(i, 1);
+                i--;
+                count++;
+            }
+        }
+
+        let info: Info;
+        if(count == 0){
+            info = new Info(`単語が見つかりませんでした`, 3);
+        }
+        else{
+            info = new Info(`単語: [${key}] を削除しました`, 2);
+        }
+
+        this.saveDictionary();
+
+        return info;
+    }
 }

@@ -42,6 +42,18 @@ export function interaction(interaction: Interaction, connectionManager: Connect
                     throw new Error('なにか足りない');
                 }
             }
+            else if (interaction.commandName == 'deleteword') {
+                let guildID = interaction.guildId;
+                let word = interaction.options.getString('word');
+                if (guildID && word) {
+                    let info = dictionaryManager.deleteWord(guildID, word);
+
+                    replyInteraction(interaction, info);
+                }
+                else{
+                    throw new Error('なにか足りない');
+                }
+            }
         }
     } catch (error) {
         replyErrorInteraction(interaction);

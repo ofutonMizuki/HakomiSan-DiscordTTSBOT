@@ -57,6 +57,18 @@ client.on('ready', () => {
                         description: '登録する読み'
                     }
                 ]
+            },
+            {
+                name: 'deleteword',
+                description: '単語を削除',
+                options: [
+                    {
+                        type: "STRING",
+                        name: "word",
+                        required: true,
+                        description: '削除する単語'
+                    }
+                ]
             }
         ])
     }
