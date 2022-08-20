@@ -1,10 +1,11 @@
 import { CommandInteraction, GuildMember, Interaction, MessageEmbed } from 'discord.js';
 import { ConnectionManager } from './connect';
 import { DictionaryManager } from './dictionary';
+import { Voice } from "./voice";
 import { Info } from './info';
 import * as HakomiUtil from './util';
 
-export function interaction(interaction: Interaction, connectionManager: ConnectionManager, dictionaryManager: DictionaryManager) {
+export async function interaction(interaction: Interaction, connectionManager: ConnectionManager, dictionaryManager: DictionaryManager, voice: Voice) {
     try {
         if (interaction.isCommand()) {
             if (interaction.commandName == 'connect') {
@@ -38,7 +39,7 @@ export function interaction(interaction: Interaction, connectionManager: Connect
 
                     replyInteraction(interaction, info);
                 }
-                else{
+                else {
                     throw new Error('なにか足りない');
                 }
             }
@@ -50,9 +51,22 @@ export function interaction(interaction: Interaction, connectionManager: Connect
 
                     replyInteraction(interaction, info);
                 }
-                else{
+                else {
                     throw new Error('なにか足りない');
                 }
+            }
+            else if (interaction.commandName == 'selectspeaker') {
+                await voice.viewSpeakers(interaction)
+                    .catch(error => {
+                        throw error;
+                    })
+            }
+        }
+        else if (interaction.isSelectMenu()) {
+            if (interaction.customId.startsWith('speaker')) {
+                let info = voice.selectSpeaker(interaction);
+
+                replyInteraction(interaction, info);
             }
         }
     } catch (error) {
@@ -70,16 +84,18 @@ function replyErrorInteraction(interaction: Interaction) {
     }
 }
 
-function replyInteraction(interaction: CommandInteraction, info: Info) {
+function replyInteraction(interaction: Interaction, info: Info) {
     //埋め込みの内容を生成
     const embed = new MessageEmbed()
         .setColor(HakomiUtil.levelToColor(info.getLevel()))
         .setTitle(info.getMessage());
     HakomiUtil.addCommonEmbed(embed);
 
-    interaction.reply({
-        embeds: [embed]
-    }).catch(error => {
-        throw error;
-    })
+    if (interaction.isCommand() || interaction.isSelectMenu()) {
+        interaction.reply({
+            embeds: [embed]
+        }).catch(error => {
+            throw error;
+        })
+    }
 }

@@ -5,6 +5,7 @@
 package-lock.json
 config.json
 dictionary.json
+voiceSettings.json
 
 #logを対象外
 *.log

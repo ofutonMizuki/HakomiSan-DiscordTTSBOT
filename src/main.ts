@@ -69,6 +69,10 @@ client.on('ready', () => {
                         description: '削除する単語'
                     }
                 ]
+            },
+            {
+                name: 'selectspeaker',
+                description: '話者を設定'
             }
         ])
     }
@@ -123,7 +127,7 @@ client.on('messageCreate', async (message: Message) => {
                 //connectionの取得を試みて、もし取得できたら発声する
                 let connection = connectionManager.getConnection(message);
                 if (connection) {
-                    let name = await voice.createVoice(content);
+                    let name = await voice.createVoice(content, message.author.id);
                     speech(connection, name);
                     logger.info(`speech: ${name}`);
                 }
@@ -137,9 +141,12 @@ client.on('messageCreate', async (message: Message) => {
 
 })
 
-client.on('interactionCreate', (interaction: Interaction) => {
+client.on('interactionCreate', async (interaction: Interaction) => {
     try {
-        InteractionUtil.interaction(interaction, connectionManager, dictionaryManager);
+        await InteractionUtil.interaction(interaction, connectionManager, dictionaryManager, voice)
+            .catch(error => {
+                throw error
+            });
     } catch (error) {
         logger.error(error);
     }
