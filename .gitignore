@@ -12,3 +12,6 @@ voiceSettings.json
 
 #wavフォルダを除外
 /wav
+
+#.vscodeフォルダを除外
+/.vscode
