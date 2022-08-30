@@ -24,6 +24,6 @@
     "ts-node": "^10.9.1",
     "tweetnacl": "^1.0.3",
     "typescript": "^4.7.4",
-    "voicevox-api-client": "^1.1.0"
+    "voicevox-api-client": "1.1.0"
   }
 }
