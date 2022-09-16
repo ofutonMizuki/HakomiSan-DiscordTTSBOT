@@ -67,25 +67,6 @@ Node.jsとDockerが必要ですがここではインストール方法は割愛�
 ./stopVoiceVox.sh
 ```
 
-## 使い方
-
-### 呼び出す
-```
->connect
-```
-もしくは
-```
->c
-```
-
-### 切断する
-```
->disConnect
-```
-もしくは
-```
->dc
-```
 ## 開発環境&推奨環境
 開発にはWindows11 + WSL2(Ubuntu 20.04LTS)を使っていますので、推奨環境としてWSL2(Ubuntu 20.04LTS)もしくはUbuntu 20.04LTSをおすすめします
 
