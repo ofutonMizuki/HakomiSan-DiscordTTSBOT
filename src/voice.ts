@@ -1,4 +1,5 @@
-import { Client, SpeakerData } from 'voicevox-api-client';
+//import { Client, SpeakerData } from 'voicevox-api-client';
+import { SpeakerData, VoiceVoxWrapper } from './voicevox';
 import fs from 'fs';
 import * as crypto from 'crypto';
 import { CommandInteraction, Message, MessageActionRow, MessageSelectMenu, SelectMenuInteraction } from 'discord.js';
@@ -14,12 +15,12 @@ class Settings {
 }
 
 export class Voice {
-    private client: Client;
+    private client: VoiceVoxWrapper;
     private Settings: Settings;
 
     //初期化
     constructor(url: string) {
-        this.client = new Client(url);
+        this.client = new VoiceVoxWrapper(url);
 
         if (fs.existsSync(path)) {
             this.Settings = JSON.parse(fs.readFileSync(path).toString());
@@ -34,9 +35,8 @@ export class Voice {
     }
 
     async viewSpeakers(interaction: CommandInteraction) {
-        await this.client.other.getSpeakers()
-            .then(async _speakers => {
-                const speakers = (_speakers as unknown as SpeakerData[]);
+        await this.client.getSpeakers()
+            .then(async speakers => {
                 let arraySpeakers = new Array();
                 let count = 0;
                 for (const speaker of speakers) {
@@ -109,8 +109,9 @@ export class Voice {
             this.Settings[userID] = 0;
         }
 
-        const query = await this.client.query.createQuery(this.Settings[userID], text);
-        const voice = await this.client.voice.createVoice(this.Settings[userID], query);
+        const voice = await this.client.createVoice(this.Settings[userID], text);
+        //const query = await this.client.query.createQuery(this.Settings[userID], text);
+        //const voice = await this.client.voice.createVoice(this.Settings[userID], query);
         const buf = Buffer.from(voice);
         fs.writeFileSync(`./wav/${hash}.wav`, buf);
 

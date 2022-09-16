@@ -88,3 +88,13 @@ Node.jsとDockerが必要ですがここではインストール方法は割愛�
 ```
 ## 開発環境&推奨環境
 開発にはWindows11 + WSL2(Ubuntu 20.04LTS)を使っていますので、推奨環境としてWSL2(Ubuntu 20.04LTS)もしくはUbuntu 20.04LTSをおすすめします
+
+## 著作権表示
+本プロジェクトのライセンスはGPLv3です  
+詳細はLICENSEに記載されています
+
+voicevox.tsは以下のプロジェクトの一部を利用しています  
+https://github.com/ddPn08/voicevox-api-client  
+Copyright (c) 2022 ddPn08  
+Released under the MIT license  
+https://opensource.org/licenses/mit-license.php
