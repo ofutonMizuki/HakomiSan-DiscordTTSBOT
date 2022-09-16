@@ -5,7 +5,7 @@ import { Info } from './info';
 import { DictionaryManager } from './dictionary';
 let dictionaryManager = new DictionaryManager();
 
-import { ConnectionManager, speech } from './connect';
+import { ConnectionManager } from './connect';
 let connectionManager = new ConnectionManager();
 
 //設定ファイルの読み込み
@@ -127,9 +127,14 @@ client.on('messageCreate', async (message: Message) => {
                 //connectionの取得を試みて、もし取得できたら発声する
                 let connection = connectionManager.getConnection(message);
                 if (connection) {
-                    let name = await voice.createVoice(content, message.author.id);
-                    speech(connection, name);
-                    logger.info(`speech: ${name}`);
+                    try {
+                        voice.speech(connection, content, message.author.id);
+                        logger.info(`speech: ${content}`);
+                    } catch (error) {
+                        const info = new Info('音声合成に失敗しました', 4);
+                        replyMessage(message, info);
+                        logger.error(info.getMessage());
+                    }
                 }
             }
         }

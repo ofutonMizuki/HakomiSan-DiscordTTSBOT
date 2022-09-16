@@ -1,4 +1,5 @@
 //import { Client, SpeakerData } from 'voicevox-api-client';
+import * as voice from '@discordjs/voice';
 import { SpeakerData, VoiceVoxWrapper } from './voicevox';
 import fs from 'fs';
 import * as crypto from 'crypto';
@@ -116,5 +117,19 @@ export class Voice {
         fs.writeFileSync(`./wav/${hash}.wav`, buf);
 
         return hash;
+    }
+    
+    async speech(connection: voice.VoiceConnection | undefined, text: string, userID: string) {
+        //もし_voiceConnectionがundefinedではないなら読み上げる
+        if (connection != undefined) {
+            const fileName = await this.createVoice(text, userID);
+
+            const player = voice.createAudioPlayer();
+            connection.subscribe(player);
+            player.play(voice.createAudioResource(`./wav/${fileName}.wav`));
+        }
+        else {
+            throw new Error('connectionはundefinedです');
+        }
     }
 }

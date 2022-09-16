@@ -131,15 +131,3 @@ export class ConnectionManager {
         }
     }
 }
-
-export function speech(connection: voice.VoiceConnection | undefined, fileName: string) {
-    //もし_voiceConnectionがundefinedではないなら読み上げる
-    if (connection != undefined) {
-        const player = voice.createAudioPlayer();
-        connection.subscribe(player);
-        player.play(voice.createAudioResource(`./wav/${fileName}.wav`));
-    }
-    else {
-        throw new Error('connectionはundefinedです');
-    }
-}
