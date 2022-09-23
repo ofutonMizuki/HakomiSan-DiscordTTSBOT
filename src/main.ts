@@ -106,39 +106,20 @@ client.on('messageCreate', async (message: Message) => {
     }
 
     try {
-        if (message.content.startsWith(`${config.prefix}connect`) || message.content.startsWith(`${config.prefix}c`)) {
-            //ボイスチャンネルへ接続を試みる
-            let info = connectionManager.connect(message);
+        let guildID = message.guildId;
+        if (guildID) {
+            let content: string = dictionaryManager.replace(guildID, message.content);
 
-            replyMessage(message, info);
-
-            logger.info(info.getMessage());
-        }
-        else if (message.content.startsWith(`${config.prefix}disConnect`) || message.content.startsWith(`${config.prefix}dc`)) {
-            //ボイスチャンネルから切断を試みる
-            let info = connectionManager.disConnect(message);
-
-            replyMessage(message, info);
-
-            logger.info(info.getMessage());
-        }
-        //それ以外なら読み上げを試みる
-        else {
-            let guildID = message.guildId;
-            if (guildID) {
-                let content: string = dictionaryManager.replace(guildID, message.content);
-
-                //connectionの取得を試みて、もし取得できたら発声する
-                let connection = connectionManager.getConnection(message);
-                if (connection) {
-                    try {
-                        voice.speech(connection, content, message.author.id);
-                        logger.info(`speech: ${content}`);
-                    } catch (error) {
-                        const info = new Info('音声合成に失敗しました', 4);
-                        replyMessage(message, info);
-                        logger.error(info.getMessage());
-                    }
+            //connectionの取得を試みて、もし取得できたら発声する
+            let connection = connectionManager.getConnection(message);
+            if (connection) {
+                try {
+                    voice.speech(connection, content, message.author.id);
+                    logger.info(`speech: ${content}`);
+                } catch (error) {
+                    const info = new Info('音声合成に失敗しました', 4);
+                    replyMessage(message, info);
+                    logger.error(info.getMessage());
                 }
             }
         }
