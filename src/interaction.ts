@@ -61,6 +61,19 @@ export async function interaction(interaction: Interaction, connectionManager: C
                         throw error;
                     })
             }
+            else if(interaction.commandName == 'addchannel'){
+                let member = interaction.member;
+                if (member instanceof GuildMember || member == null) {
+                    let info = connectionManager.addChannel(member, interaction.channel);
+
+                    replyInteraction(interaction, info);
+
+                    return info.getMessage();
+                }
+                else {
+                    throw new Error("member = APIInteractionGuildMember");
+                }
+            }
         }
         else if (interaction.isSelectMenu()) {
             if (interaction.customId.startsWith('speaker')) {

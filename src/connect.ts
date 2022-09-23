@@ -8,10 +8,10 @@ class Guilds {
 }
 
 class Connection {
-    textChannelID: string;
+    textChannelIDs: string[];
     connection: voice.VoiceConnection | undefined;
     constructor() {
-        this.textChannelID = '';
+        this.textChannelIDs = new Array();
         this.connection = undefined;
     }
 }
@@ -32,9 +32,11 @@ export class ConnectionManager {
             }
 
             //もし指定されたテキストチャンネルなら
-            if (message.channelId == this.guilds[guildID].textChannelID) {
-                let connection = this.guilds[guildID].connection;
-                return connection;
+            for (let i = 0; i < this.guilds[guildID].textChannelIDs.length; i++) {
+                if (message.channelId == this.guilds[guildID].textChannelIDs[i]) {
+                    let connection = this.guilds[guildID].connection;
+                    return connection;
+                }
             }
             return undefined;
 
@@ -45,11 +47,64 @@ export class ConnectionManager {
         }
     }
 
+    addChannel(member: GuildMember | null, textChannel: TextBasedChannel | null) {
+        if (!textChannel) {
+            throw new Error("!textChannel");
+        }
+
+        //メッセージを送信したユーザが参加しているボイスチャンネルを取得
+        let voiceChannel: VoiceChannel | StageChannel | null = null;
+        let me: GuildMember | null = null;
+        if (member) {
+            voiceChannel = member.voice.channel;
+            me = member.guild.me;
+        }
+
+        //もしボイスチャンネルに接続されていなかったら
+        if (!voiceChannel) {
+            return new Info("ボイスチャンネルに接続されていません", 3);
+        }
+
+        let guildID: string = voiceChannel.guildId;
+
+        //もしギルドが登録されていなかったらギルドを登録
+        if (!(guildID in this.guilds)) {
+            this.guilds[guildID] = new Connection();
+        }
+
+        let connection = this.guilds[guildID].connection;
+
+        //もし音声接続されていなかったら
+        if (!connection) {
+            return new Info("BOTはボイスチャンネルに接続されていません", 3);
+        }
+
+        //もし自分自身を取得できなかったら
+        if (!me) {
+            throw new Error("!me");
+        }
+
+        //ユーザと同じボイスチャンネルに接続されていたら登録する
+        if (me.voice.channelId == voiceChannel.id) {
+            if(this.guilds[guildID].textChannelIDs.indexOf(textChannel.id) == -1){
+                this.guilds[guildID].textChannelIDs.push(textChannel.id);
+
+                return new Info("テキストチャンネルを追加しました", 2);
+            }
+            else{
+                return new Info("すでにこのチャンネルは登録されています", 3);
+            }
+        }
+        else {
+            return new Info("違うボイスチャンネルに接続されています", 3);
+        }
+    }
+
     connect(message: Message): Info {
         return this.createConnect(message.member, message.channel);
     }
 
-    createConnect(member: GuildMember | null, textChannel: TextBasedChannel | null){
+    createConnect(member: GuildMember | null, textChannel: TextBasedChannel | null) {
         //メッセージを送信したユーザが参加しているボイスチャンネルを取得
         let voiceChannel: VoiceChannel | StageChannel | null = null;
         if (member) {
@@ -61,7 +116,7 @@ export class ConnectionManager {
             return new Info("ボイスチャンネルに接続されていません", 3);
         }
 
-        if(!textChannel){
+        if (!textChannel) {
             throw new Error("!textChannel");
         }
 
@@ -92,7 +147,7 @@ export class ConnectionManager {
 
             //必要な情報を登録する
             this.guilds[guildID].connection = connection;
-            this.guilds[guildID].textChannelID = textChannel.id;
+            this.guilds[guildID].textChannelIDs.push(textChannel.id);
 
             return new Info("接続しました", 2);
         }
@@ -120,12 +175,12 @@ export class ConnectionManager {
         if (connection != undefined) {
             //コネクションを破棄
             connection.destroy();
-            this.guilds[guildID].textChannelID = '';
+            this.guilds[guildID].textChannelIDs = new Array();
             this.guilds[guildID].connection = undefined;
             return new Info("切断しました", 2);
         }
         else {
-            this.guilds[guildID].textChannelID = '';
+            this.guilds[guildID].textChannelIDs = new Array();
             this.guilds[guildID].connection = undefined;
             return new Info("接続されていません", 3);
         }

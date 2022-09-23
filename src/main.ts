@@ -41,6 +41,10 @@ client.on('ready', () => {
                 description: '切断'
             },
             {
+                name: "addchannel",
+                description: 'テキストチャンネルを追加'
+            },
+            {
                 name: 'addword',
                 description: '辞書に追加',
                 options: [
