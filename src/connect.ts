@@ -34,6 +34,7 @@ export class ConnectionManager {
             //もし指定されたテキストチャンネルなら
             for (let i = 0; i < this.guilds[guildID].textChannelIDs.length; i++) {
                 if (message.channelId == this.guilds[guildID].textChannelIDs[i]) {
+                    this.connect(message);
                     let connection = this.guilds[guildID].connection;
                     return connection;
                 }
