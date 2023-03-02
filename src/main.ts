@@ -114,7 +114,7 @@ client.on('messageCreate', async (message: Message) => {
             let connection = connectionManager.getConnection(message);
             if (connection) {
                 try {
-                    voice.speech(connection, content, message.author.id);
+                    await voice.speech(connection, content, message.author.id);
                     logger.info(`speech: ${content}`);
                 } catch (error) {
                     const info = new Info('音声合成に失敗しました', 4);
