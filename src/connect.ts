@@ -145,6 +145,19 @@ export class ConnectionManager {
                 selfDeaf: true,
                 selfMute: false,
             });
+            
+            connection.on('stateChange', (oldState, newState) => {
+                const oldNetworking = Reflect.get(oldState, 'networking');
+                const newNetworking = Reflect.get(newState, 'networking');
+              
+                const networkStateChangeHandler = (oldNetworkState: any, newNetworkState: any) => {
+                  const newUdp = Reflect.get(newNetworkState, 'udp');
+                  clearInterval(newUdp?.keepAliveInterval);
+                }
+              
+                oldNetworking?.off('stateChange', networkStateChangeHandler);
+                newNetworking?.on('stateChange', networkStateChangeHandler);
+              });
 
             //必要な情報を登録する
             this.guilds[guildID].connection = connection;
